@@ -15,10 +15,10 @@ function twitterAuthorizeClear() {
 
 
 var Twitter = {
-  projectKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  projectKey: "",
   
-  consumerKey: "xxxxxxxxxxxxxxxxxxxxxxxxx",
-  consumerSecret: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  consumerKey: "",
+  consumerSecret: "",
   
   apiUrl: "https://api.twitter.com/1.1/",
   
@@ -108,12 +108,28 @@ var Twitter = {
     
     if ("get" === method) {
       if (!this.isEmpty(data)) {
+        // 2015/07/07 再度修正
+        // 旧コード）
+        // var queries = [];
+        // for (var key in data) {
+        //   // 2015/05/28 以下の部分を修正
+        //   // 旧コード） queries.push(key + "=" + encodeURIComponent(data[key]));
+        //   
+        //   
+        //   var encoded = encodeURIComponent(data[key]).replace(/[!'()*]/g, function(c) {
+        //     return "%" + c.charCodeAt(0).toString(16);
+        //   });
+        //   queries.push(key + "=" + encoded);
+        // }
+        // url += '?' + queries.join("&");
         url += '?' + Object.keys(data).map(function(key) {
           return that.encodeRfc3986(key) + '=' + that.encodeRfc3986(data[key]);
         }).join('&');
       }
     } else if ("post" == method) {
       if (!this.isEmpty(data)) {
+        // 2015/07/07 修正
+        // 旧コード）options.payload = data;
         options.payload = Object.keys(data).map(function(key) {
           return that.encodeRfc3986(key) + '=' + that.encodeRfc3986(data[key]);
         }).join('&');
@@ -230,41 +246,6 @@ Twitter.usertl = function(user, since_id) {
   return this.api(path, data);
 };
 
-// フォロワー取得
-Twitter.followers = function(user) {
-  var path = "followers/ids";
-  var data = {}
-  if (user) {
-    if (/^\d+$/.test(user)) {
-      data.user_id = user;
-    } else {
-      data.screen_name = user;
-    }
-  } else {
-    data.screen_name = "elena_bot161127";
-  }
-  
-  return this.api(path, data);
-}
-
-// フォロー取得
-Twitter.friends = function(user) {
-  var path = "friends/ids";
-  var data = {}
-  if (user) {
-    if (/^\d+$/.test(user)) {
-      data.user_id = user;
-    } else {
-      data.screen_name = user;
-    }
-  } else {
-    data.screen_name = "elena_bot161127";
-  }
-  
-  return this.api(path, data);
-}
-
-
 // ツイートする
 Twitter.tweet = function(data, reply) {
   var path = "statuses/update";
@@ -275,11 +256,7 @@ Twitter.tweet = function(data, reply) {
   }
   
   if (reply) {
-    if("string" === typeof reply) {
-      data.in_reply_to_status_id_str = reply;
-    } else {
-      data.in_reply_to_status_id = reply;
-    }
+    data.in_reply_to_status_id = reply;
   }
   
   return this.api(path, data);
@@ -305,12 +282,3 @@ Twitter.trendWords = function(woeid) {
     return words;
   }
 };
-
-
-Twitter.replies = function(last_id){
-  if(last_id) {
-    return Twitter.api('statuses/mentions_timeline',{'since_id':last_id});
-  } else {
-    return Twitter.api('statuses/mentions_timeline');
-  }
-}
