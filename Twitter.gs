@@ -13,12 +13,11 @@ function twitterAuthorizeClear() {
   Twitter.oauth.clear();
 }
 
-
 var Twitter = {
-  projectKey: "",
+  projectKey: "XXX",
   
-  consumerKey: "",
-  consumerSecret: "",
+  consumerKey: "XXX",
+  consumerSecret: "XXX",
   
   apiUrl: "https://api.twitter.com/1.1/",
   
@@ -282,3 +281,15 @@ Twitter.trendWords = function(woeid) {
     return words;
   }
 };
+
+// ツイート処理
+function autoTweet() {
+  var key = '11wvw3ZN8bfyuLRhD4R6zJg4LQbZVi1abTY1wQOr9Ot0'; // key名:https://docs.google.com/spreadsheets/d/<key名>/edit
+  var spreadSheet = SpreadsheetApp.openById(key);
+  var sheet = spreadSheet.getActiveSheet();
+  var lastRow = sheet.getLastRow();
+  var random = Math.floor(Math.random() * (lastRow - 1)) + 1;
+  var res = Twitter.tweet(sheet.getRange(random, 1).getValue());
+  // res = sheet.getRange(random, 1).getValue();
+  //Logger.log(random + " "+ res);
+}
