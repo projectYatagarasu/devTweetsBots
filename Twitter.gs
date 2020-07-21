@@ -290,6 +290,6 @@ function autoTweet() {
   var lastRow = sheet.getLastRow();
   var random = Math.floor(Math.random() * (lastRow - 1)) + 1;
   var res = Twitter.tweet(sheet.getRange(random, 1).getValue());
-  // res = sheet.getRange(random, 1).getValue();
+  //var res = sheet.getRange(random, 1).getValue();
   //Logger.log(random + " "+ res);
 }
